@@ -6,120 +6,93 @@
 <title>Iklan Rotasi</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  padding: 15px;
-  background: #f5f5f5;
-  margin: 0;
-}
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f0f2f5; margin: 0; }
+h2, h3 { text-align: center; color: #333; }
 
-h2, h3 { text-align: center; }
+/* Form Styling */
+form { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
+input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+input:focus { outline: none; border-color: #007bff; }
 
-form {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 25px;
-}
+/* Button Styling */
+button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+button:hover { background: #0056b3; }
+button:disabled { background: #ccc; cursor: not-allowed; }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
+/* Ad Container Styling */
+#ad-container { max-width: 500px; margin: 0 auto; }
+.ad-box { background: white; padding: 15px; margin-bottom: 12px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 15px; border-left: 5px solid #007bff; animation: fadeIn 0.5s; }
+.ad-box b { color: #333; font-size: 1.1em; display: block; margin-bottom: 5px; }
+.ad-box a { color: #007bff; text-decoration: none; word-break: break-all; display: inline-block; margin: 5px 0; }
+.ad-box a:hover { text-decoration: underline; }
+.loader { text-align: center; color: #666; font-style: italic; display: none; }
 
-button {
-  width: 100%;
-  padding: 12px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-button:hover {
-  background: #0056b3;
-}
-
-#ad-container {
-  margin-top: 10px;
-}
-
-.ad-box {
-  background: white;
-  padding: 15px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-  font-size: 15px;
-}
-
-.ad-box a {
-  color: #007bff;
-  word-break: break-word;
-  display: inline-block;
-  margin-top: 5px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 <body>
 
-<h2>Form Input Iklan</h2>
+<h2>Pasang Iklan Gratis</h2>
 
 <form id="adForm">
   <input type="text" id="nama" placeholder="Nama Anda" required>
-  <input type="text" id="judul" placeholder="Judul Iklan" required>
-  <input type="text" id="website" placeholder="Website / Link" required>
-  <input type="text" id="hp" placeholder="No HP" required>
-  <button type="submit">Kirim Iklan</button>
+  <input type="text" id="judul" placeholder="Judul Iklan (Contoh: Jual Madu Asli)" required>
+  <input type="url" id="website" placeholder="Link (https://... atau wa.me/...)" required>
+  <input type="tel" id="hp" placeholder="Nomor WhatsApp" required>
+  <button type="submit" id="submitBtn">Kirim Iklan</button>
 </form>
 
-<h3>Iklan Berputar</h3>
+<h3>Iklan Terbaru</h3>
+<div id="loader" class="loader">Memuat iklan...</div>
 <div id="ad-container"></div>
 
 <script>
-// === GANTI DENGAN URL WEB APP GOOGLE SCRIPT ANDA ===
-const API_URL = "https://script.google.com/macros/s/AKfycbwtcR91GQXpwRF7fHEBvBN4U5IwbDFeG7WzwrUlLQkQjt-_rToK3GkQEKtcm98YNujiJQ/exec";
+// === PENTING: GANTI URL DI BAWAH INI DENGAN HASIL DEPLOY BARU ANDA ===
+const API_URL = "https://script.google.com/macros/s/AKfycbxVsjrPA4uiI8GW15bK5xOBDt1NRDWx04ywT7sFg7nTZWMWHFcabk8BUg7PsjnXhX5Y/exec"; 
 
 // Submit Form
 document.getElementById("adForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  
+  const btn = document.getElementById("submitBtn");
+  const originalText = btn.innerText;
+  btn.innerText = "Mengirim...";
+  btn.disabled = true;
 
-  const data = new URLSearchParams();
-  data.append("nama", document.getElementById("nama").value);
-  data.append("judul", document.getElementById("judul").value);
-  data.append("website", document.getElementById("website").value);
-  data.append("hp", document.getElementById("hp").value);
+  // Kita gunakan Objek JSON biasa, bukan URLSearchParams
+  const dataObj = {
+    nama: document.getElementById("nama").value,
+    judul: document.getElementById("judul").value,
+    website: document.getElementById("website").value,
+    hp: document.getElementById("hp").value
+  };
 
   try {
+    // Teknik fetch 'text/plain' untuk menghindari preflight CORS di Google Apps Script
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: data
+      body: JSON.stringify(dataObj)
     });
 
     const result = await res.json();
 
     if (result.status === "success") {
-      alert("Iklan berhasil disimpan!");
+      alert("Iklan berhasil terbit!");
       e.target.reset();
-      loadAds();
+      loadAds(); // Refresh iklan
     } else {
-      alert("Gagal menyimpan data!");
+      alert("Gagal menyimpan: " + result.message);
     }
 
   } catch (err) {
-    alert("Gagal mengirim data!");
+    alert("Terjadi kesalahan jaringan atau URL Script salah.");
     console.error(err);
+  } finally {
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 });
 
@@ -127,43 +100,58 @@ document.getElementById("adForm").addEventListener("submit", async (e) => {
 let ads = [];
 
 async function loadAds() {
+  document.getElementById("loader").style.display = "block";
   try {
-    const res = await fetch(API_URL + "?mode=get");
+    const res = await fetch(API_URL); // Default method GET
     ads = await res.json();
+    document.getElementById("loader").style.display = "none";
     showRandomAds();
   } catch (err) {
     console.error("Gagal load ads:", err);
+    document.getElementById("loader").innerHTML = "Gagal memuat iklan. Periksa koneksi.";
   }
 }
 
 // Show 5 random ads
 function showRandomAds() {
+  const container = document.getElementById("ad-container");
+  
   if (!ads || ads.length === 0) {
-    document.getElementById("ad-container").innerHTML =
-      "<p style='text-align:center;color:gray;'>Belum ada iklan</p>";
+    container.innerHTML = "<p style='text-align:center;color:gray;'>Belum ada iklan tayang.</p>";
     return;
   }
 
+  // Acak urutan iklan
   const shuffled = [...ads].sort(() => Math.random() - 0.5);
+  // Ambil 5 teratas
   const selected = shuffled.slice(0, 5);
 
-  const container = document.getElementById("ad-container");
   container.innerHTML = "";
 
   selected.forEach(ad => {
     const box = document.createElement("div");
     box.className = "ad-box";
+    
+    // Sanitasi URL agar aman (tambahkan https jika belum ada)
+    let cleanLink = ad.website;
+    if (!cleanLink.startsWith('http')) {
+        cleanLink = 'https://' + cleanLink;
+    }
+
     box.innerHTML = `
-      <b>${ad.judul}</b><br>
+      <b>${ad.judul}</b>
       <small>Oleh: ${ad.nama}</small><br>
-      <a href="${ad.website}" target="_blank">${ad.website}</a><br>
-      <small>HP: ${ad.hp}</small>
+      <a href="${cleanLink}" target="_blank">Kunjungi Link &#8599;</a><br>
+      <small style="color:#28a745">WhatsApp: ${ad.hp}</small>
     `;
     container.appendChild(box);
   });
 }
 
+// Rotasi otomatis setiap 10 detik tanpa reload data (lebih hemat kuota)
 setInterval(showRandomAds, 10000);
+
+// Load pertama kali
 loadAds();
 </script>
 
