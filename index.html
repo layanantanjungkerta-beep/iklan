@@ -85,9 +85,10 @@ button:hover {
 <div id="ad-container"></div>
 
 <script>
+// === GANTI DENGAN URL WEB APP GOOGLE SCRIPT ANDA ===
 const API_URL = "https://script.google.com/macros/s/AKfycbwtcR91GQXpwRF7fHEBvBN4U5IwbDFeG7WzwrUlLQkQjt-_rToK3GkQEKtcm98YNujiJQ/exec";
 
-// ---- SUBMIT FORM (POST) ----
+// Submit Form
 document.getElementById("adForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -98,14 +99,23 @@ document.getElementById("adForm").addEventListener("submit", async (e) => {
   data.append("hp", document.getElementById("hp").value);
 
   try {
-    await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
       body: data
     });
 
-    alert("Iklan berhasil disimpan!");
-    e.target.reset();
-    loadAds();
+    const result = await res.json();
+
+    if (result.status === "success") {
+      alert("Iklan berhasil disimpan!");
+      e.target.reset();
+      loadAds();
+    } else {
+      alert("Gagal menyimpan data!");
+    }
 
   } catch (err) {
     alert("Gagal mengirim data!");
@@ -113,7 +123,7 @@ document.getElementById("adForm").addEventListener("submit", async (e) => {
   }
 });
 
-// ---- LOAD DATA (GET) ----
+// Load iklan
 let ads = [];
 
 async function loadAds() {
@@ -126,10 +136,10 @@ async function loadAds() {
   }
 }
 
-// ---- TAMPILKAN 5 IKLAN ACAK ----
+// Show 5 random ads
 function showRandomAds() {
   if (!ads || ads.length === 0) {
-    document.getElementById("ad-container").innerHTML = 
+    document.getElementById("ad-container").innerHTML =
       "<p style='text-align:center;color:gray;'>Belum ada iklan</p>";
     return;
   }
@@ -153,10 +163,7 @@ function showRandomAds() {
   });
 }
 
-// ---- ROTASI OTOMATIS ----
 setInterval(showRandomAds, 10000);
-
-// ---- LOAD AWAL ----
 loadAds();
 </script>
 
