@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Iklan Rotasi</title>
+<title>Iklan Rotasi Tanjungkerta</title>
 
 <style>
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f0f2f5; margin: 0; }
@@ -12,19 +12,18 @@ h2, h3 { text-align: center; color: #333; }
 /* Form Styling */
 form { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
 input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-input:focus { outline: none; border-color: #007bff; }
+input:focus { outline: none; border-color: #25d366; } /* Warna WA */
 
 /* Button Styling */
-button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
-button:hover { background: #0056b3; }
+button { width: 100%; padding: 12px; background: #25d366; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;}
+button:hover { background: #128c7e; }
 button:disabled { background: #ccc; cursor: not-allowed; }
 
 /* Ad Container Styling */
 #ad-container { max-width: 500px; margin: 0 auto; }
-.ad-box { background: white; padding: 15px; margin-bottom: 12px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 15px; border-left: 5px solid #007bff; animation: fadeIn 0.5s; }
+.ad-box { background: white; padding: 15px; margin-bottom: 12px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 15px; border-left: 5px solid #25d366; animation: fadeIn 0.5s; }
 .ad-box b { color: #333; font-size: 1.1em; display: block; margin-bottom: 5px; }
 .ad-box a { color: #007bff; text-decoration: none; word-break: break-all; display: inline-block; margin: 5px 0; }
-.ad-box a:hover { text-decoration: underline; }
 .loader { text-align: center; color: #666; font-style: italic; display: none; }
 
 @keyframes fadeIn {
@@ -35,43 +34,56 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 </head>
 <body>
 
-<h2>Pasang Iklan Gratis</h2>
+<h2>Pasang Iklan Warga</h2>
 
 <form id="adForm">
   <input type="text" id="nama" placeholder="Nama Anda" required>
-  <input type="text" id="judul" placeholder="Judul Iklan (Contoh: Jual Madu Asli)" required>
-  <input type="url" id="website" placeholder="Link (https://... atau wa.me/...)" required>
-  <input type="tel" id="hp" placeholder="Nomor WhatsApp" required>
-  <button type="submit" id="submitBtn">Kirim Iklan</button>
+  <input type="text" id="judul" placeholder="Judul Iklan (Contoh: Jual Bibit Pala)" required>
+  <input type="url" id="website" placeholder="Link / Kontak (https://wa.me/628...)" required>
+  <input type="tel" id="hp" placeholder="Nomor HP Anda" required>
+  
+  <button type="submit" id="submitBtn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+    </svg>
+    Kirim & Bagikan ke WA
+  </button>
+  <small style="display:block; text-align:center; margin-top:5px; color:#666;">
+    *Wajib bagikan ke 5 teman agar iklan aktif.
+  </small>
 </form>
 
-<h3>Iklan Terbaru</h3>
-<div id="loader" class="loader">Memuat iklan...</div>
+<h3>Info Terbaru</h3>
+<div id="loader" class="loader">Memuat data...</div>
 <div id="ad-container"></div>
 
 <script>
-// === PENTING: GANTI URL DI BAWAH INI DENGAN HASIL DEPLOY BARU ANDA ===
+// === GANTI DENGAN URL WEB APP SCRIPT ANDA DI SINI ===
 const API_URL = "https://script.google.com/macros/s/AKfycbxVsjrPA4uiI8GW15bK5xOBDt1NRDWx04ywT7sFg7nTZWMWHFcabk8BUg7PsjnXhX5Y/exec"; 
 
-// Submit Form
+// Link Web yang akan dibagikan
+const SHARE_LINK = "https://layanantanjungkerta-beep.github.io/iklan/";
+
 document.getElementById("adForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   
   const btn = document.getElementById("submitBtn");
-  const originalText = btn.innerText;
-  btn.innerText = "Mengirim...";
+  const originalText = btn.innerHTML;
+  btn.innerText = "Menyimpan...";
   btn.disabled = true;
 
-  // Kita gunakan Objek JSON biasa, bukan URLSearchParams
+  const nama = document.getElementById("nama").value;
+  const judul = document.getElementById("judul").value;
+
   const dataObj = {
-    nama: document.getElementById("nama").value,
-    judul: document.getElementById("judul").value,
+    nama: nama,
+    judul: judul,
     website: document.getElementById("website").value,
     hp: document.getElementById("hp").value
   };
 
   try {
-    // Teknik fetch 'text/plain' untuk menghindari preflight CORS di Google Apps Script
+    // 1. Simpan ke Google Sheet
     const res = await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify(dataObj)
@@ -80,78 +92,76 @@ document.getElementById("adForm").addEventListener("submit", async (e) => {
     const result = await res.json();
 
     if (result.status === "success") {
-      alert("Iklan berhasil terbit!");
+      // 2. Siapkan Pesan WhatsApp
+      // Pesan ini yang akan otomatis muncul di WA pengguna
+      const waMessage = `Halo, saya ${nama}. Saya baru saja pasang iklan "${judul}".\n\nYuk cek layanan dan iklan warga Desa Tanjungkerta lainnya disini:\n${SHARE_LINK}`;
+      
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
+
+      // 3. Tampilkan Notifikasi & Redirect ke WA
+      if(confirm("Data tersimpan! Langkah terakhir: Bagikan info ini ke teman-teman di WhatsApp agar iklan Anda tayang maksimal. Buka WhatsApp sekarang?")) {
+          window.open(waUrl, '_blank');
+      }
+
       e.target.reset();
-      loadAds(); // Refresh iklan
+      loadAds();
+      
     } else {
       alert("Gagal menyimpan: " + result.message);
     }
 
   } catch (err) {
-    alert("Terjadi kesalahan jaringan atau URL Script salah.");
+    alert("Terjadi kesalahan koneksi.");
     console.error(err);
   } finally {
-    btn.innerText = originalText;
+    btn.innerHTML = originalText;
     btn.disabled = false;
   }
 });
 
-// Load iklan
+// --- Fungsi Load Iklan (Sama seperti sebelumnya) ---
 let ads = [];
 
 async function loadAds() {
   document.getElementById("loader").style.display = "block";
   try {
-    const res = await fetch(API_URL); // Default method GET
+    const res = await fetch(API_URL);
     ads = await res.json();
     document.getElementById("loader").style.display = "none";
     showRandomAds();
   } catch (err) {
     console.error("Gagal load ads:", err);
-    document.getElementById("loader").innerHTML = "Gagal memuat iklan. Periksa koneksi.";
+    document.getElementById("loader").innerHTML = "Gagal memuat iklan.";
   }
 }
 
-// Show 5 random ads
 function showRandomAds() {
   const container = document.getElementById("ad-container");
-  
   if (!ads || ads.length === 0) {
-    container.innerHTML = "<p style='text-align:center;color:gray;'>Belum ada iklan tayang.</p>";
+    container.innerHTML = "<p style='text-align:center;color:gray;'>Belum ada iklan.</p>";
     return;
   }
-
-  // Acak urutan iklan
   const shuffled = [...ads].sort(() => Math.random() - 0.5);
-  // Ambil 5 teratas
   const selected = shuffled.slice(0, 5);
 
   container.innerHTML = "";
-
   selected.forEach(ad => {
     const box = document.createElement("div");
     box.className = "ad-box";
-    
-    // Sanitasi URL agar aman (tambahkan https jika belum ada)
     let cleanLink = ad.website;
-    if (!cleanLink.startsWith('http')) {
-        cleanLink = 'https://' + cleanLink;
-    }
+    if (!cleanLink.startsWith('http')) cleanLink = 'https://' + cleanLink;
 
     box.innerHTML = `
       <b>${ad.judul}</b>
       <small>Oleh: ${ad.nama}</small><br>
-      <a href="${cleanLink}" target="_blank">Kunjungi Link &#8599;</a><br>
-      <small style="color:#28a745">WhatsApp: ${ad.hp}</small>
+      <a href="${cleanLink}" target="_blank">Lihat Detail &#8599;</a><br>
+      <small style="color:#28a745">CP: ${ad.hp}</small>
     `;
     container.appendChild(box);
   });
 }
 
-// Rotasi otomatis setiap 10 detik tanpa reload data (lebih hemat kuota)
 setInterval(showRandomAds, 10000);
-
-// Load pertama kali
 loadAds();
 </script>
 
